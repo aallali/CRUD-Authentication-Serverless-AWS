@@ -262,6 +262,7 @@ Server ready: http://localhost:3000 🚀
 - **updateTodo** `PUT    | http://localhost:3000/dev/todo/{todoId}`
     <details>
     <summary>Click me</summary>
+    
     - body:
         ```json
         {
@@ -287,6 +288,7 @@ Server ready: http://localhost:3000 🚀
 - **deleteTodo** `DELETE | http://localhost:3000/dev/todo/{todoId}`
     <details>
     <summary>Click me</summary>
+
     - request : http://localhost:3000/dev/todo/645129cc4e8969a6ab36f72a
     - result:
         ```json
@@ -303,6 +305,7 @@ Server ready: http://localhost:3000 🚀
 - **getAllTodos-final** `GET    | http://localhost:3000/dev/todo`
     <details>
     <summary>Click me</summary>
+
     - result:
     ```json
         {
