@@ -30,26 +30,7 @@ This template contains a single lambda function triggered by an HTTP request mad
 
 > :warning: As is, this template, once deployed, opens a **public** endpoint within your AWS account resources. Anybody with the URL can actively execute the API Gateway endpoint and the corresponding lambda. You should protect this endpoint with the authentication method of your choice.
 
-### Locally [deprecated]
 
-In order to test the hello function locally, run the following command:
-
-- `npx sls invoke local -f hello --path src/functions/hello/mock.json` if you're using NPM
-- `yarn sls invoke local -f hello --path src/functions/hello/mock.json` if you're using Yarn
-
-Check the [sls invoke local command documentation](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/) for more information.
-
-### Remotely [deprecated]
-
-Copy and replace your `url` - found in Serverless `deploy` command output - and `name` parameter in the following `curl` command in your terminal or in Postman to test your newly deployed application.
-
-```
-curl --location --request POST 'https://myApiEndpoint/dev/hello' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "name": "Frederic"
-}'
-```
 
 ## Template features
 
@@ -82,6 +63,9 @@ The project code base is mainly located within the `src` folder. This folder is 
 ├── serverless.ts               # Serverless service file
 ├── tsconfig.json               # Typescript compiler configuration
 ├── tsconfig.paths.json         # Typescript paths
+├──.env
+├──.env.development
+├──.env.production
 ├── package.json
 ├── yarn.lock
 └── README.md
@@ -176,5 +160,5 @@ test your endpoint again. PROBLEME FIXED
 - [ ] document all the code
 - [x] deploy to AWS
 - [x] test deployed functionality with Postman
-- [ ] creat a test enviorment with Postman for local/deployed
-- [ ] integrate MongoDb into the app
+- [x] creat a test enviorment with Postman for local/deployed
+- [x] integrate MongoDb into the app (check other branch)
