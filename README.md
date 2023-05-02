@@ -1,57 +1,24 @@
-# Serverless - AWS Node.js Typescript - TODO app
-
+## Serverless - AWS - Node.js - Typescript - TODO app [mongoDb]
+---
 This project has been generated using the `aws-nodejs-typescript` template from the [Serverless framework](https://www.serverless.com/).
 
 For detailed instructions, please refer to the [documentation](https://www.serverless.com/framework/docs/providers/aws/).
 
+
+#### Note:
+>this branch contains MongoDB implementation in serverless/nodeJs using Mongoose
 ## Installation/deployment instructions
 
 Depending on your preferred package manager, follow the instructions below to deploy your project.
 
 > **Requirements**: NodeJS `lts/fermium  (v14.21.3)`. If you're using [nvm](https://github.com/nvm-sh/nvm), run `nvm use` to ensure you're using the same Node version in local and in your lambda's runtime.
 
-### Using NPM
-
-- Run `npm install` to install the project dependencies
-- Run `npx sls deploy` to deploy this stack to AWS
+ 
 
 ### Using Yarn
 
-- Run `yarn install` to install the project dependencies
-- Run `yarn sls deploy` to deploy this stack to AWS
-
-## Test your service
-
-This template contains a single lambda function triggered by an HTTP request made on the provisioned API Gateway REST API `/hello` route with `POST` method. The request body must be provided as `application/json`. The body structure is tested by API Gateway against `src/functions/hello/schema.ts` JSON-Schema definition: it must contain the `name` property.
-
-- requesting any other path than `/hello` with any other method than `POST` will result in API Gateway returning a `403` HTTP error code
-- sending a `POST` request to `/hello` with a payload **not** containing a string property named `name` will result in API Gateway returning a `400` HTTP error code
-- sending a `POST` request to `/hello` with a payload containing a string property named `name` will result in API Gateway returning a `200` HTTP status code with a message saluting the provided name and the detailed event processed by the lambda
-
-> :warning: As is, this template, once deployed, opens a **public** endpoint within your AWS account resources. Anybody with the URL can actively execute the API Gateway endpoint and the corresponding lambda. You should protect this endpoint with the authentication method of your choice.
-
-### Locally [deprecated]
-
-In order to test the hello function locally, run the following command:
-
-- `npx sls invoke local -f hello --path src/functions/hello/mock.json` if you're using NPM
-- `yarn sls invoke local -f hello --path src/functions/hello/mock.json` if you're using Yarn
-
-Check the [sls invoke local command documentation](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/) for more information.
-
-### Remotely [deprecated]
-
-Copy and replace your `url` - found in Serverless `deploy` command output - and `name` parameter in the following `curl` command in your terminal or in Postman to test your newly deployed application.
-
-```
-curl --location --request POST 'https://myApiEndpoint/dev/hello' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "name": "Frederic"
-}'
-```
-
-## Template features
+- Run `yarn ci` to install the project dependencies (script declared in package.json)
+- Run `yarn deploy` to deploy this stack to AWS
 
 ### Project structure
 
@@ -61,28 +28,40 @@ The project code base is mainly located within the `src` folder. This folder is 
 - `libs` - containing shared code base between your lambdas
 
 ```
-
 .
 ├── src
 │   ├── functions
-│   │   ├── index.ts
+│   │   ├── __ignore__
 │   │   └── todo
-│   │       ├── handler.ts       # `Todo` lambda source code
-│   │       └── index.ts         # `Todo` lambda Serverless configuration
-│   └── libs                     # Lambda shared code
-│       └── api-gateway.ts       # API Gateway specific helpers
-│       └── handler-resolver.ts  # Sharable library for resolving lambda handlers
-│       └── lambda.ts            # Lambda middleware
-│   ├── model
-│   │   ├── Todo.ts
-│   │   └── index.ts
-│   └── services
-│       ├── index.ts
-│       └── todoService.ts
-├── serverless.ts               # Serverless service file
-├── tsconfig.json               # Typescript compiler configuration
-├── tsconfig.paths.json         # Typescript paths
+│   │       ├── handler.ts
+│   │       ├── index.ts
+│   │       ├── service
+│   │       │   ├── index.ts
+│   │       │   └── todoService.ts
+│   │       └── src
+│   │           ├── createTodo.ts
+│   │           ├── deleteTodo.ts
+│   │           ├── getAllTodos.ts
+│   │           ├── getTodo.ts
+│   │           └── updateTodo.ts
+│   └── libs
+│       ├── api-gateway.ts
+│       ├── database
+│       │   ├── connect.ts
+│       │   ├── index.ts
+│       │   ├── model
+│       │   │   └── todo.ts
+│       │   ├── queries
+│       │   │   └── index.ts
+│       │   └── withDatabaseConnection.ts
+│       └── handler-resolver.ts
 ├── package.json
+├── serverless.ts
+├── tsconfig.json
+├── tsconfig.paths.json
+├──.env
+├──.env.development
+├──.env.production
 ├── yarn.lock
 └── README.md
 ```
@@ -90,7 +69,6 @@ The project code base is mainly located within the `src` folder. This folder is 
 ### 3rd party libraries
 
 - [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts) - uses JSON-Schema definitions used by API Gateway for HTTP request validation to statically generate TypeScript types in your lambda's handler code base
-- [middy](https://github.com/middyjs/middy) - middleware engine for Node.Js lambda. This template uses [http-json-body-parser](https://github.com/middyjs/middy/tree/master/packages/http-json-body-parser) to convert API Gateway `event.body` property, originally passed as a stringified JSON, to its corresponding parsed object
 - [@serverless/typescript](https://github.com/serverless/typescript) - provides up-to-date TypeScript definitions for your `serverless.ts` service file
 
 ### Deployment to AWS
@@ -102,79 +80,251 @@ The project code base is mainly located within the `src` folder. This folder is 
 
     > ✔ Profile "default" has been configured
 
-### Advanced usage
+- run `yarn deploy`
+    <details>
+    <summary>Click me</summary>
+        
+    ```shell
+    todo-AWS-Serverless on  mongodb-implement [!?] is 📦 1.0.0 via ⬢ v14.21.0 took 1m 43.0s 
+    ➜ yarn deploy
+    yarn run v1.22.19
+    $ sls deploy
+    DOTENV: Loading environment variables from .env, .env.development:
+            - MONGO_URL
 
-Any tsconfig.json can be used, but if you do, set the environment variable `TS_NODE_CONFIG` for building the application, eg `TS_NODE_CONFIG=./tsconfig.app.json npx serverless webpack`
+    Deploying todo-aws-serverless to stage dev (us-east-1)
 
-## Explain the code:
-### serverless.ts
+    ✔ Service deployed to stack todo-aws-serverless-dev (84s)
 
-- **frameworkVersion** 
-    >is the version of the Serverless Framework our project is running on. Version 3 is the latest release at the time of writing.
-    
-- plugins: 
+    endpoints:
+    GET - https://{{public_url}}.amazonaws.com/dev/todo
+    POST - https://{{public_url}}.amazonaws.com/dev/todo
+    GET - https://{{public_url}}.amazonaws.com/dev/todo/{todoId}
+    PUT - https://{{public_url}}.amazonaws.com/dev/todo/{todoId}
+    DELETE - https://{{public_url}}.amazonaws.com/dev/todo/{todoId}
+    functions:
+    getAllTodos: todo-aws-serverless-dev-getAllTodos (1.3 MB)
+    createTodo: todo-aws-serverless-dev-createTodo (1.3 MB)
+    getTodo: todo-aws-serverless-dev-getTodo (1.3 MB)
+    updateTodo: todo-aws-serverless-dev-updateTodo (1.3 MB)
+    deleteTodo: todo-aws-serverless-dev-deleteTodo (1.3 MB)
 
-    - **serverless-esbuild** and **serverless-offline**
-    >that enable our project to run locally
-    - **serverless-dynamodb-local** 
-    >enables us to run DynamoDB locally.
-- providers:
-we configure the cloud provider used for our project. We defined some properties of the cloud provider, like the name, runtime, apiGateway,iam
-    - **iam**
-    >iam statements to give our Lambda functions read and write permissions to our DynamoDB resource table.
-
-
-### How i Fixed ...
-- **the error** :
-
-when i tried to run `sls offline start`, an error about DynamoDB local not running, after some investigation i noticed that i didn't run : `sls dynamodb install`
-but after run that command i came accross this error:
+    Improve API performance – monitor it with the Serverless Console: run "serverless --console"
+    ✨  Done in 89.20s.
+    ```
+    </details>
+### Test Endpoints locally : 
+run locally with `yarn dev`
 ```shell
-➜ sls dynamodb install
-Running "serverless" from node_modules
-Started downloading dynamodb-local from http://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.tar.gz into /Users/XXXX/Desktop/todo-AWS-Serverless/.dynamodb. Process may take few minutes.
-✖ Uncaught exception
-Environment: darwin, node 14.21.0, framework 3.30.1 (local) 3.25.1v (global), plugin 6.2.3, SDK 4.3.2
-Docs:        docs.serverless.com
-Support:     forum.serverless.com
-Bugs:        github.com/serverless/serverless/issues
+➜ yarn dev
+yarn run v1.22.19
+$ nodemon -e ts  --exec "sls offline start"
+[nodemon] 2.0.20
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: ts
+[nodemon] starting `sls offline start`
+DOTENV: Loading environment variables from .env, .env.development:
+	 - MONGO_URL
 
-Error:
-Error: Error getting DynamoDb local latest tar.gz location undefined: 403
+Starting Offline at stage dev (us-east-1)
+
+Offline [http for lambda] listening on http://localhost:3002
+Function names exposed for local invocation by aws-sdk:
+           * getAllTodos: todo-aws-serverless-dev-getAllTodos
+           * createTodo: todo-aws-serverless-dev-createTodo
+           * getTodo: todo-aws-serverless-dev-getTodo
+           * updateTodo: todo-aws-serverless-dev-updateTodo
+           * deleteTodo: todo-aws-serverless-dev-deleteTodo
+
+   ┌─────────────────────────────────────────────────────────────────────────────────┐
+   │                                                                                 │
+   │   GET    | http://localhost:3000/dev/todo                                       │
+   │   POST   | http://localhost:3000/2015-03-31/functions/getAllTodos/invocations   │
+   │   POST   | http://localhost:3000/dev/todo                                       │
+   │   POST   | http://localhost:3000/2015-03-31/functions/createTodo/invocations    │
+   │   GET    | http://localhost:3000/dev/todo/{todoId}                              │
+   │   POST   | http://localhost:3000/2015-03-31/functions/getTodo/invocations       │
+   │   PUT    | http://localhost:3000/dev/todo/{todoId}                              │
+   │   POST   | http://localhost:3000/2015-03-31/functions/updateTodo/invocations    │
+   │   DELETE | http://localhost:3000/dev/todo/{todoId}                              │
+   │   POST   | http://localhost:3000/2015-03-31/functions/deleteTodo/invocations    │
+   │                                                                                 │
+   └─────────────────────────────────────────────────────────────────────────────────┘
+
+Server ready: http://localhost:3000 🚀
+
 ```
-Apparently it start to download something into `.dynamodb/` folder, but nothing is in there,
-- **Solution**
+- **createTodo** `POST   | http://localhost:3000/dev/todo`
+    <details>
+    <summary>Click me</summary>
 
-Downloaded the tar.gz file from the official AWS website, and unzipped it into `.dyanmodb` folder.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html#DynamoDBLocal.DownloadingAndRunning.title
-then run `sls dynamodb install`. PROBLEME FIXED
+    - body_1:
+        ```json
+        {
+            "title": "todo title example",
+            "description": "lorem lepsum, lorem lepsum"
+        }
+        ```
+    - result_1:
+        ```json
+        {
+            "todo": {
+                "todosId": "645129cc4e8969a6ab36f72a",
+                "title": "todo title example",
+                "description": "lorem lepsum, lorem lepsum",
+                "status": false,
+                "created_at": "2023-05-02T15:18:36.508Z",
+                "updated_at": "2023-05-02T15:18:36.508Z"
+            }
+        }
+        ```
+    - body_2:
+        ```json
+        {
+            "title": "second todo title example",
+            "description": "test the second todo creation"
+        }
+        ```
+    - result_2:
+        ```json
+        {
+            "todo": {
+                "todosId": "64512a614e8969a6ab36f72c",
+                "title": "second todo title example",
+                "description": "test the second todo creation",
+                "status": false,
+                "created_at": "2023-05-02T15:21:05.544Z",
+                "updated_at": "2023-05-02T15:21:05.544Z"
+            }
+        }
+        ```
 
----
-- **the error** :
+    </details>
 
-after deploy the app into AWS using the command `sls deploy`
+- **getAllTodos** `GET    | http://localhost:3000/dev/todo`
+    <details>
+    <summary>Click me</summary>
 
-i tested the GET endpoint that uses this function `"getAllTodos"`  but i got `500 internal server error`
+    - result:
+    ```json
+    {
+        "todos": [
+            {
+                "todosId": "645129cc4e8969a6ab36f72a",
+                "title": "todo title example",
+                "description": "lorem lepsum, lorem lepsum",
+                "status": false,
+                "created_at": "2023-05-02T15:18:36.508Z",
+                "updated_at": "2023-05-02T15:18:36.508Z"
+            },
+            {
+                "todosId": "64512a614e8969a6ab36f72c",
+                "title": "second todo title example",
+                "description": "test the second todo creation",
+                "status": false,
+                "created_at": "2023-05-02T15:21:05.544Z",
+                "updated_at": "2023-05-02T15:21:05.544Z"
+            }
+        ]
+    }
+    ```
+    </details>
 
-i tried to check the logs via this command `serverless logs -f getAllTodos -t`
+- **getTodo** `GET    | http://localhost:3000/dev/todo/{todoId}`
+    <details>
+    <summary>Click me</summary>
 
-and this is the output 
+    - exists : http://localhost:3000/dev/todo/64512a614e8969a6ab36f72c
+    - result : 
+        ```json
+        {
+            "todo": {
+                "todosId": "64512a614e8969a6ab36f72c",
+                "title": "second todo title example",
+                "description": "test the second todo creation",
+                "status": false,
+                "created_at": "2023-05-02T15:21:05.544Z",
+                "updated_at": "2023-05-02T15:21:05.544Z"
+            },
+            "id": "64512a614e8969a6ab36f72c"
+        }
+        ```
+    - non existing : http://localhost:3000/dev/todo/00000a614e8969a6ab00000c
+    - result : 
+        ```json
+        {
+            "status": 500,
+            "message": "Id does not exit"
+        }
+        ```
+    </details>
+- **updateTodo** `PUT    | http://localhost:3000/dev/todo/{todoId}`
+    <details>
+    <summary>Click me</summary>
+    - body:
+        ```json
+        {
+            "description": "(description of second todo is updated, and status set to True)",
+            "status": true
+        }
+        ```
+    - result:
+        ```json
+        {
+            "todo": {
+                "todosId": "64512a614e8969a6ab36f72c",
+                "title": "second todo title example",
+                "description": "(description of second todo is updated, and status set to True)",
+                "status": true,
+                "created_at": "2023-05-02T15:21:05.544Z",
+                "updated_at": "2023-05-02T15:30:57.845Z"
+            },
+            "id": "64512a614e8969a6ab36f72c"
+        }
+        ```
+    </details>
+- **deleteTodo** `DELETE | http://localhost:3000/dev/todo/{todoId}`
+    <details>
+    <summary>Click me</summary>
+    - request : http://localhost:3000/dev/todo/645129cc4e8969a6ab36f72a
+    - result:
+        ```json
+            {
+                "todo": {
+                    "acknowledged": true,
+                    "deletedCount": 1
+                },
+                "id": "645129cc4e8969a6ab36f72a"
+            }
+        ```
+    </details>
 
->2023-04-29 21:34:31.413     ERROR       Invoke Error    {"errorType":"AccessDeniedException","errorMessage":"User: arn:aws:sts::340132161984:assumed-role/todo-aws-serverless-dev-us-east-1-lambdaRole/**todo-aws-serverless-dev-getAllTodos is not authorized to perform: dynamodb:Scan** on resource: arn:aws:dynamodb:us-east-1:340132161984:table/TodosTable because no identity-based policy allows the dynamodb:Scan action","code":"**AccessDeniedException**","message":"User: arn:aws:sts::340132161984:assumed-role/todo-aws-serverless-dev-us-east-1-lambdaRole/todo-aws-serverless-dev-getAllTodos is not authorized to perform: dynamodb:Scan on resource: arn:aws:dynamodb:us-east-1:340132161984:table/TodosTable **because no identity-based policy** allows the **dynamodb:Scan action**","time"
+- **getAllTodos-final** `GET    | http://localhost:3000/dev/todo`
+    <details>
+    <summary>Click me</summary>
+    - result:
+    ```json
+        {
+            "todos": [
+                {
+                    "todosId": "64512a614e8969a6ab36f72c",
+                    "title": "second todo title example",
+                    "description": "(description of second todo is updated, and status set to True)",
+                    "status": true,
+                    "created_at": "2023-05-02T15:21:05.544Z",
+                    "updated_at": "2023-05-02T15:30:57.845Z"
+                }
+            ]
+        }
+    ```
+    </details>
 
-- **Solution**
-
-got to AWS portal then :
-1. IAM Go to policies
-1. Choose the `AmazonDynamoDBFullAccess` policy (try full access and then go back and restrict your permissions)
-1. From **Policy Actions**  - Select **Attach** and Attach it to the role that is used by your Lambda
-test your endpoint again. PROBLEME FIXED
-
+ 
 
 ## todo
-- [x] run dynamoDB locally
 - [ ] document all the code
 - [x] deploy to AWS
 - [x] test deployed functionality with Postman
-- [ ] creat a test enviorment with Postman for local/deployed
-- [ ] integrate MongoDb into the app
+- [x] creat a test enviorment with Postman for local/deployed
+- [x] integrate MongoDb into the app
