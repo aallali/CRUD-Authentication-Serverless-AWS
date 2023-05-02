@@ -4,9 +4,11 @@ This project has been generated using the `aws-nodejs-typescript` template from 
 
 For detailed instructions, please refer to the [documentation](https://www.serverless.com/framework/docs/providers/aws/).
 
-
+ 
 #### Note:
->this branch contains MongoDB implementation in serverless/nodeJs using Mongoose
+>⚠️ this branch contains MongoDB implementation in serverless/nodeJs using Mongoose
+
+>⚠️ check the dynamoDB implementation in this [branch](https://github.com/aallali/todo-AWS-Serverless/tree/dynamodb-implement)
 ## Installation/deployment instructions
 
 Depending on your preferred package manager, follow the instructions below to deploy your project.
@@ -262,7 +264,7 @@ Server ready: http://localhost:3000 🚀
 - **updateTodo** `PUT    | http://localhost:3000/dev/todo/{todoId}`
     <details>
     <summary>Click me</summary>
-    
+
     - body:
         ```json
         {
