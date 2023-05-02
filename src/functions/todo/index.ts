@@ -1,6 +1,6 @@
 import { handlerPath } from '@libs/handler-resolver';
 export const getAllTodos = {
-    handler: `${handlerPath(__dirname)}/handler.getAllTodos`,
+    handler: `${handlerPath(__dirname)}/handler.getAllTodosHandler`,
     events: [
         {
             http: {
@@ -12,7 +12,7 @@ export const getAllTodos = {
 };
 
 export const createTodo = {
-    handler: `${handlerPath(__dirname)}/handler.createTodo`,
+    handler: `${handlerPath(__dirname)}/handler.createTodoHandler`,
     events: [
         {
             http: {
@@ -24,36 +24,36 @@ export const createTodo = {
 };
 
 export const getTodo = {
-    handler: `${handlerPath(__dirname)}/handler.getTodo`,
+    handler: `${handlerPath(__dirname)}/handler.getTodoHandler`,
     events: [
         {
             http: {
                 method: 'get',
-                path: 'todo/{id}',
+                path: 'todo/{todoId}',
             },
         },
     ],
 };
 
 export const updateTodo = {
-    handler: `${handlerPath(__dirname)}/handler.updateTodo`,
+    handler: `${handlerPath(__dirname)}/handler.updateTodoHandler`,
     events: [
         {
             http: {
                 method: 'put',
-                path: 'todo/{id}',
+                path: 'todo/{todoId}',
             },
         },
     ],
 };
 
 export const deleteTodo = {
-    handler: `${handlerPath(__dirname)}/handler.deleteTodo`,
+    handler: `${handlerPath(__dirname)}/handler.deleteTodoHandler`,
     events: [
         {
             http: {
                 method: 'delete',
-                path: 'todo/{id}',
+                path: 'todo/{todoId}',
             },
         },
     ],
