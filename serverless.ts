@@ -6,16 +6,15 @@ import {
   getTodo,
   updateTodo,
   deleteTodo,
-} from "./src/functions/todo";
+} from "@functions/todo";
 
 const serverlessConfiguration: AWS = {
   service: "todo-aws-serverless",
   frameworkVersion: "3",
-  useDotenv: true,
   plugins: [
     "serverless-esbuild",
     "serverless-offline",
-    "serverless-dynamodb-local",
+    "serverless-dotenv-plugin",
   ],
   provider: {
     name: "aws",
@@ -28,25 +27,6 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
     },
-    iam: {
-      role: {
-        statements: [
-          {
-            Effect: "Allow",
-            Action: [
-              "dynamodb:DescribeTable",
-              "dynamodb:Query",
-              "dynamodb:Scan",
-              "dynamodb:GetItem",
-              "dynamodb:PutItem",
-              "dynamodb:UpdateItem",
-              "dynamodb:DeleteItem",
-            ],
-            Resource: "arn:aws:dynamodb:us-west-2:*:table/TodosTable",
-          },
-        ],
-      },
-    },
   },
 
   // import the function via paths
@@ -54,6 +34,12 @@ const serverlessConfiguration: AWS = {
 
   package: { individually: true },
   custom: {
+    "serverless-offline-watcher": [
+      {
+        path: "src/**/*.ts",
+        command: `yarn dev`,
+      },
+    ],
     esbuild: {
       bundle: true,
       minify: false,
@@ -63,40 +49,6 @@ const serverlessConfiguration: AWS = {
       define: { "require.resolve": undefined },
       platform: "node",
       concurrency: 10,
-    },
-    dynamodb: {
-      start: {
-        port: 5000,
-        inMemory: true,
-        migrate: true,
-      },
-      stages: "dev",
-    },
-  },
-  resources: {
-    Resources: {
-      TodosTable: {
-        Type: "AWS::DynamoDB::Table",
-        Properties: {
-          TableName: "TodosTable",
-          AttributeDefinitions: [
-            {
-              AttributeName: "todosId",
-              AttributeType: "S",
-            },
-          ],
-          KeySchema: [
-            {
-              AttributeName: "todosId",
-              KeyType: "HASH",
-            },
-          ],
-          ProvisionedThroughput: {
-            ReadCapacityUnits: 1,
-            WriteCapacityUnits: 1,
-          },
-        },
-      },
     },
   },
 };
