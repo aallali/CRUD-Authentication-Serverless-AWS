@@ -1,8 +1,7 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from "aws-lambda";
-import { formatJSONResponse } from "@libs/api-gateway";
+import { ProxyResponse } from "@libs/api-gateway";
 import { todoService } from "../service";
 import { withDatabaseConnection } from "@libs/database";
- 
 
 const updateTodo = async (
   event: APIGatewayProxyEvent
@@ -17,15 +16,16 @@ const updateTodo = async (
   console.log(id, updatedTodo);
   try {
     const todo = await todoService.updateTodo(id, updatedTodo);
-    return formatJSONResponse({
-      todo,
-      id,
-    });
+    return ProxyResponse(
+      200,
+      {
+        todo,
+        id,
+      },
+      null
+    );
   } catch (e) {
-    return formatJSONResponse({
-      status: 500,
-      message: e,
-    });
+    return ProxyResponse(500, null, e);
   }
 };
 export default withDatabaseConnection(updateTodo);
