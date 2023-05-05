@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from "aws-lambda";
-import { formatJSONResponse } from "@libs/api-gateway";
+import { ProxyResponse } from "@libs/api-gateway";
 import { todoService } from "../service";
 import { withDatabaseConnection } from "@libs/database";
 
@@ -16,14 +16,9 @@ const createTodo = async (
       description: todoBody.description,
       status: todoBody.status,
     });
-    return formatJSONResponse({
-      todo,
-    });
+    return ProxyResponse(200, todo, null);
   } catch (err) {
-    return formatJSONResponse({
-      status: 500,
-      message: err.message || err,
-    });
+    return ProxyResponse(500, null, err);
   }
 };
 
