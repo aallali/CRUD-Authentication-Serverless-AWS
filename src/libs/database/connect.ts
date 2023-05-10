@@ -12,12 +12,12 @@ async function connect(): Promise<mongoose.Connection> {
   });
 
   database.once("open", () => {
-    console.info(":------------------------------------------:");
-    console.info(":-------DB Connected Successfully----------:");
-    console.info(":------------------------------------------:");
-
+    console.info(":------- DB Connected Successfully ----------:");
   });
-  await mongoose.connect(process.env.MONGO_URL);
+  await mongoose.connect(process.env.MONGO_URL, {
+    autoCreate: true,
+    autoIndex: true,
+  });
   return database;
 }
 

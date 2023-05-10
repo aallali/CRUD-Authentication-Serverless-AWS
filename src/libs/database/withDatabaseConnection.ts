@@ -1,15 +1,12 @@
 import connect from "./connect";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
 function withDatabaseConnection(
-  callback: (event: APIGatewayProxyEvent) => Promise<APIGatewayProxyResult>
+  callback: (...params: any) => Promise<any>
 ) {
-  return async function (
-    event: APIGatewayProxyEvent
-  ): Promise<APIGatewayProxyResult> {
+  return async function (...params: any): Promise<any> {
     const database = await connect();
 
-    const result = await callback(event);
+    const result = await callback(...params);
 
     database.close();
 

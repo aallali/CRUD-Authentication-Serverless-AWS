@@ -9,7 +9,6 @@ export const getOneItem = <IOpts, IResponse>(
   model: Model<any, any, any>,
   opts: IOpts
 ): Promise<IResponse> => {
-    console.log(opts)
   return model.findOne({ ...opts });
 };
 export const createOneItem = (
