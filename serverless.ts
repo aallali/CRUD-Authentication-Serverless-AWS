@@ -7,6 +7,8 @@ import {
   updateTodo,
   deleteTodo,
 } from "@functions/todo";
+import { signUp, signIn } from "@functions/users";
+import authorizerHandler from "@functions/authorizer";
 
 const serverlessConfiguration: AWS = {
   service: "todo-aws-serverless",
@@ -30,16 +32,28 @@ const serverlessConfiguration: AWS = {
   },
 
   // import the function via paths
-  functions: { getAllTodos, createTodo, getTodo, updateTodo, deleteTodo },
+  functions: {
+    // authorizer lambdas
+    myAuthorizer: authorizerHandler,
+    // todo lammbdas
+    getAllTodos,
+    createTodo,
+    getTodo,
+    updateTodo,
+    deleteTodo,
+    // users lambdas
+    signUp,
+    signIn,
+  },
 
   package: { individually: true },
   custom: {
-    "serverless-offline-watcher": [
-      {
-        path: "src/**/*.ts",
-        command: `yarn dev`,
-      },
-    ],
+    authorizer: {
+      name: "authorizerHandler",
+      resultTtlInSeconds: 3600, // not working yet
+      identitySource: "method.request.header.Authorization",
+      type: "request",
+    },
     esbuild: {
       bundle: true,
       minify: false,

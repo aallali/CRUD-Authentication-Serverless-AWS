@@ -1,14 +1,17 @@
-## Serverless - AWS - Node.js - Typescript - TODO app [mongoDb]
+# CRUD + Authentication / Serverless
+## [AWS - Node.js - Typescript - mongoDb]
+
 ---
-This project has been generated using the `aws-nodejs-typescript` template from the [Serverless framework](https://www.serverless.com/).
 
 For detailed instructions, please refer to the [documentation](https://www.serverless.com/framework/docs/providers/aws/).
 
  
 #### Note:
->⚠️ this branch contains MongoDB implementation in serverless/nodeJs using Mongoose
+>⚠️ this branch contains MongoDB+Authentication implementation in serverless/nodeJs using Mongoose
 
->⚠️ check the dynamoDB implementation in this [branch](https://github.com/aallali/todo-AWS-Serverless/tree/dynamodb-implement)
+>⚠️ check other branches for different DB or Implementations
+
+> Don't hesitate to contribute if you see something to improve or got better ideas, i would like to learn :) 
 ## Installation/deployment instructions
 
 Depending on your preferred package manager, follow the instructions below to deploy your project.
@@ -33,39 +36,62 @@ The project code base is mainly located within the `src` folder. This folder is 
 .
 ├── src
 │   ├── functions
-│   │   ├── __ignore__
-│   │   └── todo
+│   │   ├── authorizer                     # Lambda Authorizer
+│   │   │   ├── handler.ts
+│   │   │   ├── index.ts
+│   │   │   └── src
+│   │   │       └── AuthPolicy.ts          # policy document generator
+│   │   ├── todo                           # TODO functions container
+│   │   │   ├── handler.ts 
+│   │   │   ├── index.ts
+│   │   │   ├── service
+│   │   │   │   ├── index.ts
+│   │   │   │   └── todoService.ts
+│   │   │   └── src
+│   │   │       ├── createTodo.ts
+│   │   │       ├── deleteTodo.ts
+│   │   │       ├── getAllTodos.ts
+│   │   │       ├── getTodo.ts
+│   │   │       └── updateTodo.ts
+│   │   └── users                          # USERS functions container
 │   │       ├── handler.ts
 │   │       ├── index.ts
 │   │       ├── service
 │   │       │   ├── index.ts
-│   │       │   └── todoService.ts
+│   │       │   └── usersService.ts
 │   │       └── src
-│   │           ├── createTodo.ts
-│   │           ├── deleteTodo.ts
-│   │           ├── getAllTodos.ts
-│   │           ├── getTodo.ts
-│   │           └── updateTodo.ts
+│   │           ├── signIn.ts
+│   │           └── signUp.ts
 │   └── libs
 │       ├── api-gateway.ts
-│       ├── database
+│       ├── database                       # DATABASE custom package    
 │       │   ├── connect.ts
 │       │   ├── index.ts
 │       │   ├── model
-│       │   │   └── todo.ts
+│       │   │   ├── todo.ts
+│       │   │   └── user.ts
 │       │   ├── queries
 │       │   │   └── index.ts
-│       │   └── withDatabaseConnection.ts
-│       └── handler-resolver.ts
+│       │   └── withDatabaseConnection.ts  # DB connection wrapper
+│       ├── handler-resolver.ts
+│       └── tokens                         # Tokens custom package
+│           ├── constants.ts
+│           ├── index.ts
+│           └── src
+│               ├── decryptData.ts
+│               ├── encryptData.ts
+│               ├── generateJWT.ts
+│               ├── getTokenPayload.ts
+│               └── validateToken.ts
+├── README.md
+├──.env
+├──.env.dev
+├──.env.production
 ├── package.json
 ├── serverless.ts
 ├── tsconfig.json
 ├── tsconfig.paths.json
-├──.env
-├──.env.development
-├──.env.production
-├── yarn.lock
-└── README.md
+└── yarn.lock
 ```
 
 ### 3rd party libraries
@@ -87,57 +113,64 @@ The project code base is mainly located within the `src` folder. This folder is 
     <summary>Click me</summary>
         
     ```shell
-    todo-AWS-Serverless on  mongodb-implement [!?] is 📦 1.0.0 via ⬢ v14.21.0 took 1m 43.0s 
-    ➜ yarn deploy
-    yarn run v1.22.19
-    $ sls deploy
-    DOTENV: Loading environment variables from .env, .env.development:
+    ➜ sls deploy --stage dev
+    Running "serverless" from node_modules
+    DOTENV: Loading environment variables from .env.dev:
             - MONGO_URL
+            - STAGE
+            - JWT_SECRET
+            - ENCRYPTION_KEY
+            - ENCRYPTION_IV
 
     Deploying todo-aws-serverless to stage dev (us-east-1)
 
-    ✔ Service deployed to stack todo-aws-serverless-dev (84s)
+    ✔ Service deployed to stack todo-aws-serverless-dev (207s)
 
     endpoints:
-    GET - https://{{public_url}}.amazonaws.com/dev/todo
-    POST - https://{{public_url}}.amazonaws.com/dev/todo
-    GET - https://{{public_url}}.amazonaws.com/dev/todo/{todoId}
-    PUT - https://{{public_url}}.amazonaws.com/dev/todo/{todoId}
-    DELETE - https://{{public_url}}.amazonaws.com/dev/todo/{todoId}
+        GET - https://XXXX.execute-api.us-east-1.amazonaws.com/dev/todo
+        POST - https://XXXX.execute-api.us-east-1.amazonaws.com/dev/todo
+        GET - https://XXXX.execute-api.us-east-1.amazonaws.com/dev/todo/{todoId}
+        PUT - https://XXXX.execute-api.us-east-1.amazonaws.com/dev/todo/{todoId}
+        DELETE - https://XXXX.execute-api.us-east-1.amazonaws.com/dev/todo/{todoId}
+        POST - https://XXXX.execute-api.us-east-1.amazonaws.com/dev/users/signup
+        POST - https://XXXX.execute-api.us-east-1.amazonaws.com/dev/users/signin
     functions:
-    getAllTodos: todo-aws-serverless-dev-getAllTodos (1.3 MB)
-    createTodo: todo-aws-serverless-dev-createTodo (1.3 MB)
-    getTodo: todo-aws-serverless-dev-getTodo (1.3 MB)
-    updateTodo: todo-aws-serverless-dev-updateTodo (1.3 MB)
-    deleteTodo: todo-aws-serverless-dev-deleteTodo (1.3 MB)
+        myAuthorizer: todo-aws-serverless-dev-myAuthorizer (314 kB)
+        getAllTodos: todo-aws-serverless-dev-getAllTodos (1.4 MB)
+        createTodo: todo-aws-serverless-dev-createTodo (1.4 MB)
+        getTodo: todo-aws-serverless-dev-getTodo (1.4 MB)
+        updateTodo: todo-aws-serverless-dev-updateTodo (1.4 MB)
+        deleteTodo: todo-aws-serverless-dev-deleteTodo (1.4 MB)
+        signUp: todo-aws-serverless-dev-signUp (1.7 MB)
+        signIn: todo-aws-serverless-dev-signIn (1.7 MB)
 
-    Improve API performance – monitor it with the Serverless Console: run "serverless --console"
-    ✨  Done in 89.20s.
     ```
     </details>
 ### Test Endpoints locally : 
 run locally with `yarn dev`
 ```shell
-➜ yarn dev
-yarn run v1.22.19
-$ nodemon -e ts  --exec "sls offline start"
-[nodemon] 2.0.20
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching path(s): *.*
-[nodemon] watching extensions: ts
-[nodemon] starting `sls offline start`
-DOTENV: Loading environment variables from .env, .env.development:
-	 - MONGO_URL
+➜ sls offline start
+Running "serverless" from node_modules
+DOTENV: Loading environment variables from .env:
+         - MONGO_URL
+         - STAGE
+         - JWT_SECRET
+         - ENCRYPTION_KEY
+         - ENCRYPTION_IV
 
 Starting Offline at stage dev (us-east-1)
 
 Offline [http for lambda] listening on http://localhost:3002
 Function names exposed for local invocation by aws-sdk:
+           * myAuthorizer: todo-aws-serverless-dev-myAuthorizer
            * getAllTodos: todo-aws-serverless-dev-getAllTodos
            * createTodo: todo-aws-serverless-dev-createTodo
            * getTodo: todo-aws-serverless-dev-getTodo
            * updateTodo: todo-aws-serverless-dev-updateTodo
            * deleteTodo: todo-aws-serverless-dev-deleteTodo
+           * signUp: todo-aws-serverless-dev-signUp
+           * signIn: todo-aws-serverless-dev-signIn
+Configuring Authorization: todo/ myAuthorizer
 
    ┌─────────────────────────────────────────────────────────────────────────────────┐
    │                                                                                 │
@@ -151,12 +184,75 @@ Function names exposed for local invocation by aws-sdk:
    │   POST   | http://localhost:3000/2015-03-31/functions/updateTodo/invocations    │
    │   DELETE | http://localhost:3000/dev/todo/{todoId}                              │
    │   POST   | http://localhost:3000/2015-03-31/functions/deleteTodo/invocations    │
+   │   POST   | http://localhost:3000/dev/users/signup                               │
+   │   POST   | http://localhost:3000/2015-03-31/functions/signUp/invocations        │
+   │   POST   | http://localhost:3000/dev/users/signin                               │
+   │   POST   | http://localhost:3000/2015-03-31/functions/signIn/invocations        │
    │                                                                                 │
    └─────────────────────────────────────────────────────────────────────────────────┘
 
 Server ready: http://localhost:3000 🚀
-
 ```
+- **register** `POST    | http://localhost:3000/dev/users/signup`
+    <details>
+    <summary>Click me</summary>
+
+    - body_1:
+        ```json
+        {
+            "firstName": "Faker",
+            "lastName": "Holder",
+            "email": "fake@fake.com",
+            "password": "Abcdefgh123"
+        }
+        ```
+    - result_1:
+        ```json
+        "Account created succefully, please check you email for verification."
+        ```
+    - body_2:
+        ```json
+        {
+            "firstName": "Faker",
+            "lastName": "",
+            "email": "fake@fake.com",
+            "password": "Abcdefgh123"
+        }
+        ```
+    - result_2:
+        ```json
+        {
+            "code": "too_small",
+            "minimum": 5,
+            "type": "string",
+            "inclusive": true,
+            "exact": false,
+            "message": "String must contain at least 5 character(s)",
+            "path": [
+                "lastName"
+            ]
+        }
+        ```
+    </details>
+- **login** `POST    | http://localhost:3000/dev/users/signin`
+    <details>
+    <summary>Click me</summary>
+
+    - body_1:
+        ```json
+        {
+            "email": "fake@fake.com",
+            "password": "Abcdefgh123"
+        }
+        ```
+    - result_1:
+        ```json
+        {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYXV0aHxkZXYiLCJ1c2VyIjoiVVNFUnw2NDViZDZhYzYwMTJmNDU2Y2YzMGJlMTYiLCJhY3R2Ijp0cnVlLCJhY3R2MiI6IkVtYWlsIFZlcmlmaWNhdGlvbiIsImlhdCI6MTY4Mzc0MDg1NCwiZXhwIjoxNjgzNzQ0NDU0fQ.-FArqfrEaMYoiE3ZxHSCSaTtjpGGcFl3VqMMjDFTsjM"
+        }
+        ```
+    </details>
+
 - **createTodo** `POST   | http://localhost:3000/dev/todo`
     <details>
     <summary>Click me</summary>
@@ -190,16 +286,16 @@ Server ready: http://localhost:3000 🚀
         ```
     - result_2:
         ```json
-        {
-            "todo": {
-                "todosId": "64512a614e8969a6ab36f72c",
-                "title": "second todo title example",
-                "description": "test the second todo creation",
-                "status": false,
-                "created_at": "2023-05-02T15:21:05.544Z",
-                "updated_at": "2023-05-02T15:21:05.544Z"
+            {
+                "todo": {
+                    "todosId": "64512a614e8969a6ab36f72c",
+                    "title": "second todo title example",
+                    "description": "test the second todo creation",
+                    "status": false,
+                    "created_at": "2023-05-02T15:21:05.544Z",
+                    "updated_at": "2023-05-02T15:21:05.544Z"
+                }
             }
-        }
         ```
 
     </details>
@@ -208,31 +304,39 @@ Server ready: http://localhost:3000 🚀
     <details>
     <summary>Click me</summary>
 
-    - result:
-    ```json
-    {
-        "todos": [
-            {
-                "todosId": "645129cc4e8969a6ab36f72a",
-                "title": "todo title example",
-                "description": "lorem lepsum, lorem lepsum",
-                "status": false,
-                "created_at": "2023-05-02T15:18:36.508Z",
-                "updated_at": "2023-05-02T15:18:36.508Z"
-            },
-            {
-                "todosId": "64512a614e8969a6ab36f72c",
-                "title": "second todo title example",
-                "description": "test the second todo creation",
-                "status": false,
-                "created_at": "2023-05-02T15:21:05.544Z",
-                "updated_at": "2023-05-02T15:21:05.544Z"
-            }
-        ]
-    }
-    ```
+    - with header including Authorization token we got from login request  `Bearer ##############`
+    - result1:
+        ```json
+        {
+            "todos": [
+                {
+                    "todosId": "645129cc4e8969a6ab36f72a",
+                    "title": "todo title example",
+                    "description": "lorem lepsum, lorem lepsum",
+                    "status": false,
+                    "created_at": "2023-05-02T15:18:36.508Z",
+                    "updated_at": "2023-05-02T15:18:36.508Z"
+                },
+                {
+                    "todosId": "64512a614e8969a6ab36f72c",
+                    "title": "second todo title example",
+                    "description": "test the second todo creation",
+                    "status": false,
+                    "created_at": "2023-05-02T15:21:05.544Z",
+                    "updated_at": "2023-05-02T15:21:05.544Z"
+                }
+            ]
+        }
+        ```
+    - without Authorization token.
+    - result1:
+        ```json
+        statusCode: 401
+        {
+            "message": "Unauthorized"
+        }
+        ```
     </details>
-
 - **getTodo** `GET    | http://localhost:3000/dev/todo/{todoId}`
     <details>
     <summary>Click me</summary>

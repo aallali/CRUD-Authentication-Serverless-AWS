@@ -1,4 +1,4 @@
-import TodoServerice from "./todoService";
+import TodoService from "./todoService";
 
-const todoService = new TodoServerice();
+const todoService = new TodoService();
 export { todoService };
