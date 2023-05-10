@@ -8,7 +8,7 @@ import {
   getItemById,
 } from "@libs/database";
 
-export default class TodoServerice {
+export default class TodoService {
   // private Tablename: string = "TodosTable";
 
   constructor() {}
@@ -20,7 +20,7 @@ export default class TodoServerice {
   }
 
   async createTodo(todo: ITodo): Promise<ITodo> {
-    console.log(todo);
+
     const todoDoc = await createOneItem(TodoModel, todo);
     return todoDoc as unknown as ITodo;
   }

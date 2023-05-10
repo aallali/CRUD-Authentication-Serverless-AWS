@@ -13,7 +13,7 @@ const updateTodo = async (
     Object.entries({ status, title, description }).filter(([_, v]) => v != null)
   );
 
-  console.log(id, updatedTodo);
+
   try {
     const todo = await todoService.updateTodo(id, updatedTodo);
     return ProxyResponse(
