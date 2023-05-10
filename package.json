@@ -4,7 +4,7 @@
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
   "scripts": {
-    "dev": "nodemon -e ts  --exec \"sls offline start\"",
+    "dev": "nodemon -e ts  --exec \"reset && sls offline start\"",
     "ci": "yarn install --frozen-lockfile",
     "deploy": "sls deploy"
   },
@@ -14,8 +14,11 @@
   "dependencies": {
     "@middy/core": "^3.4.0",
     "@middy/http-json-body-parser": "^3.4.0",
+    "jsonwebtoken": "^9.0.0",
+    "jwks-rsa": "^3.0.1",
     "mongoose": "^7.1.0",
-    "serverless-dotenv-plugin": "^6.0.0"
+    "serverless-dotenv-plugin": "^6.0.0",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",
